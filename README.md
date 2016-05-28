@@ -41,6 +41,15 @@ nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cWORD>'), expand('<cwo
 vnoremap <silent> <Leader><Leader>K y:<C-U>call Dasht(getreg(0), '!')<Return>
 ```
 
+Developers can run the [vim-spec] tests:
+[vim-spec]: https://github.com/kana/vim-vspec
+
+```sh
+gem install bundler         # first time
+bundle install              # first time
+bundle exec vim-flavor test # every time
+```
+
 Distributed under the same terms as Vim.
 >  Copyright 2016 Suraj N. Kurapati
 >     <https://github.com/sunaku>
