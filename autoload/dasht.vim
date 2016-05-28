@@ -25,26 +25,52 @@ function! dasht#execute(command) abort
   endif
 endfunction
 
-" Returns a shell command that searches dasht for the given pattern in the
-" given docsets.  If none are given or if no results are found, the search
-" is repeated using all available docsets, for a more forgiving experience.
+" Builds a shell command that searches for the given pattern (which may be a
+" list) in the given docsets (which may be a list or the name of a filetype).
 function! dasht#command(pattern, docsets) abort
-  let command = 'dasht '. shellescape(a:pattern, 1)
-  let command = join([command] + map(a:docsets, 'shellescape(v:val, 1)'), ' ')
-  if !empty(a:docsets) " fallback to searching inside all available docsets
-    let command = command .' 2>/dev/null || '. command
-  endif
-  return command
+  return dasht#resolve_command(dasht#resolve_pattern(a:pattern), dasht#resolve_docsets(a:docsets))
 endfunction
 
-" Searches for the given pattern in docsets either directly given as a list
-" or indirectly looked up through the `g:dasht_filetype_docsets` dictionary.
-function! dasht#search(pattern, docsets_or_filetype) abort
-  if type(a:docsets_or_filetype) == type([])
-    let docsets = a:docsets_or_filetype
-  else " look it up from the dictionary
-    let key = a:docsets_or_filetype
-    let docsets = [key] + get(get(g:, 'dasht_filetype_docsets', {}), key, [])
+" Builds a shell command that searches for the given pattern (which may be a
+" list) in the given docsets (which may be a list or the name of a filetype).
+function! dasht#resolve_command(pattern, docsets) abort
+  if type(a:pattern) == type([])
+    return join(map(a:pattern, 'dasht#resolve_command(v:val, a:docsets)'), ' || ')
+  else
+    let arguments = map([a:pattern] + a:docsets, 'shellescape(v:val, 1)')
+    return join(['dasht'] + arguments, ' ')
   endif
-  call dasht#execute(dasht#command(a:pattern, docsets))
+endfunction
+
+" Resolves the given pattern (which may be a list) into a list of patterns:
+" the first one is the original and the second one is a forgiving fallback,
+" where all non-word characters are replaced by spaces (wildcards in dasht).
+" Duplicate values are removed from this list before it is returned to you.
+function! dasht#resolve_pattern(pattern) abort
+  if type(a:pattern) == type([])
+    let result = []
+    call map(a:pattern, 'extend(result, dasht#resolve_pattern(v:val))')
+    return result
+  else
+    let patterns = [a:pattern, substitute(a:pattern, '\W\+', ' ', 'g')]
+    return uniq(filter(patterns, 'match(v:val, "\\S") != -1'))
+  endif
+endfunction
+
+" Resolves the given docsets (which may be a list or the name of a filetype,
+" which is resolved through lookup in `g:dasht_filetype_docsets` dictionary:
+" the first one is original and the rest are from the dictionary definition).
+function! dasht#resolve_docsets(docsets) abort
+  if type(a:docsets) == type([])
+    return a:docsets
+  else
+    let key = a:docsets
+    return [key] + get(get(g:, 'dasht_filetype_docsets', {}), key, [])
+  endif
+endfunction
+
+" Searches for the given pattern (which may be a list) in the given docsets
+" (which may be a list or a filetype resolved by `g:dasht_filetype_docsets`).
+function! dasht#search(pattern, docsets) abort
+  call dasht#execute(dasht#command(a:pattern, a:docsets))
 endfunction

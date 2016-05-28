@@ -8,7 +8,7 @@
 nnoremap <Leader>k :Dasht<Space>
 
 " Search API docs for word under cursor:
-nnoremap <silent> <Leader>K :call Dasht(expand('<cword>'))<Return>
+nnoremap <silent> <Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')])<Return>
 
 " Search API docs for the selected text:
 vnoremap <silent> <Leader>K y:<C-U>call Dasht(getreg(0))<Return>
@@ -35,7 +35,7 @@ Or search all APIs with an override `!`:
 nnoremap <Leader><Leader>k :Dasht!<Space>
 
 " Search API docs for word under cursor:
-nnoremap <silent> <Leader><Leader>K :call Dasht(expand('<cword>'), '!')<Return>
+nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')], '!')<Return>
 
 " Search API docs for the selected text:
 vnoremap <silent> <Leader><Leader>K y:<C-U>call Dasht(getreg(0), '!')<Return>
