@@ -1,6 +1,7 @@
 " Runs the given shell command.  If it exits with a nonzero status, waits for
 " the user to press any key before clearing the given shell command's output.
-function! dasht#execute(command) abort
+" Under NeoVim, the terminal's title is overriden to reflect the given value.
+function! dasht#execute(command, title) abort
   if has('nvim')
     let termopen = {}
     function termopen.on_exit(id, code, event)
@@ -10,6 +11,8 @@ function! dasht#execute(command) abort
     endfunction
     -tabnew
     call termopen(a:command, termopen)
+    " change tab title; see `:help :file_f`
+    execute 'file' shellescape(a:title, 1)
     startinsert
   else
     " stty and dd below emulate getch(3)
@@ -74,5 +77,6 @@ endfunction
 " Searches for the given pattern (which may be a list) in the given docsets
 " (which may be a list or a filetype resolved by `g:dasht_filetype_docsets`).
 function! dasht#search(pattern, docsets) abort
-  call dasht#execute(dasht#command(a:pattern, a:docsets))
+  let title = type(a:pattern) == type([]) ? a:pattern[0] : a:pattern
+  call dasht#execute(dasht#command(a:pattern, a:docsets), title)
 endfunction
