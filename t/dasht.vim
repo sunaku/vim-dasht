@@ -19,6 +19,10 @@ describe 'dasht#command'
     Expect dasht#command('foo!', []) == "dasht 'foo\\!' || dasht 'foo '"
     Expect dasht#command(['foo!'], []) == "dasht 'foo\\!' || dasht 'foo '"
   end
+
+  it 'ignores duplicate patterns and instead only operates on unique ones'
+    Expect dasht#command(['foo', 'foo'], []) == "dasht 'foo'"
+  end
 end
 
 describe 'dasht#resolve_command'
