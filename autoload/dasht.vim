@@ -31,7 +31,7 @@ endfunction
 " Builds a shell command that searches for the given pattern (which may be a
 " list) in the given docsets (which may be a list or the name of a filetype).
 function! dasht#command(pattern, docsets) abort
-  let patterns = uniq(dasht#resolve_pattern(a:pattern))
+  let patterns = dasht#resolve_pattern(a:pattern)
   let patterns = empty(patterns) ? [''] : patterns
   return dasht#resolve_command(patterns, dasht#resolve_docsets(a:docsets))
 endfunction
@@ -55,7 +55,7 @@ function! dasht#resolve_pattern(pattern) abort
   if type(a:pattern) == type([])
     let result = []
     call map(a:pattern, 'extend(result, dasht#resolve_pattern(v:val))')
-    return result
+    return uniq(result)
   else
     let patterns = [a:pattern, substitute(a:pattern, '\W\+', ' ', 'g')]
     return uniq(filter(patterns, 'match(v:val, "\\S") != -1'))

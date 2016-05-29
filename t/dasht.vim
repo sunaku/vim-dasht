@@ -73,6 +73,11 @@ describe 'dasht#resolve_pattern'
     Expect dasht#resolve_pattern(['foo', 'bar!']) == ['foo', 'bar!', 'bar ']
     Expect dasht#resolve_pattern(['foo!', 'bar!']) == ['foo!', 'foo ', 'bar!', 'bar ']
   end
+
+  it 'removes duplicate patterns from the final list of patterns it returns'
+    Expect dasht#resolve_pattern(['foo', 'foo']) == ['foo']
+    Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!', 'foo ']
+  end
 end
 
 describe 'dasht#resolve_docsets'
