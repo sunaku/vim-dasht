@@ -57,7 +57,8 @@ function! dasht#resolve_pattern(pattern) abort
     call map(a:pattern, 'extend(result, dasht#resolve_pattern(v:val))')
     return uniq(result)
   else
-    let patterns = [a:pattern, substitute(a:pattern, '\W\+', ' ', 'g')]
+    let patterns = map([a:pattern, substitute(a:pattern, '\W\+', ' ', 'g')],
+          \ 'substitute(v:val, "^\\s\\+\\|\\s\\+$", "", "g")')
     return uniq(filter(patterns, 'match(v:val, "\\S") != -1'))
   endif
 endfunction

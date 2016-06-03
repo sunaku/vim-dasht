@@ -16,8 +16,8 @@ describe 'dasht#command'
   end
 
   it 'joins commands with || when pattern expands into forgiving fallback'
-    Expect dasht#command('foo!', []) == "dasht 'foo\\!' || dasht 'foo '"
-    Expect dasht#command(['foo!'], []) == "dasht 'foo\\!' || dasht 'foo '"
+    Expect dasht#command('foo!', []) == "dasht 'foo\\!' || dasht 'foo'"
+    Expect dasht#command(['foo!'], []) == "dasht 'foo\\!' || dasht 'foo'"
   end
 
   it 'ignores duplicate patterns and instead only operates on unique ones'
@@ -50,12 +50,21 @@ describe 'dasht#resolve_pattern'
     Expect dasht#resolve_pattern("\t \t") == []
   end
 
+  it 'strips leading and trailing whitespace from patterns'
+    Expect dasht#resolve_pattern('foo ') == ['foo']
+    Expect dasht#resolve_pattern(' foo') == ['foo']
+    Expect dasht#resolve_pattern(' foo ') == ['foo']
+    Expect dasht#resolve_pattern("foo\t") == ['foo']
+    Expect dasht#resolve_pattern("\tfoo") == ['foo']
+    Expect dasht#resolve_pattern("\tfoo\t") == ['foo']
+  end
+
   it 'returns original version of pattern when it only contains word-chars'
     Expect dasht#resolve_pattern('foo') == ['foo']
   end
 
   it 'returns forgiving version of pattern when it contains non-word chars'
-    Expect dasht#resolve_pattern('foo!') == ['foo!', 'foo ']
+    Expect dasht#resolve_pattern('foo!') == ['foo!', 'foo']
   end
 
   it 'when given a list as argument, does all of the above for each member'
@@ -67,16 +76,16 @@ describe 'dasht#resolve_pattern'
     Expect dasht#resolve_pattern(['foo', '']) == ['foo']
     Expect dasht#resolve_pattern(['foo', ' ']) == ['foo']
     Expect dasht#resolve_pattern(['foo', "\t"]) == ['foo']
-    Expect dasht#resolve_pattern(['foo!']) == ['foo!', 'foo ']
+    Expect dasht#resolve_pattern(['foo!']) == ['foo!', 'foo']
     Expect dasht#resolve_pattern(['foo', 'bar']) == ['foo', 'bar']
-    Expect dasht#resolve_pattern(['foo!', 'bar']) == ['foo!', 'foo ', 'bar']
-    Expect dasht#resolve_pattern(['foo', 'bar!']) == ['foo', 'bar!', 'bar ']
-    Expect dasht#resolve_pattern(['foo!', 'bar!']) == ['foo!', 'foo ', 'bar!', 'bar ']
+    Expect dasht#resolve_pattern(['foo!', 'bar']) == ['foo!', 'foo', 'bar']
+    Expect dasht#resolve_pattern(['foo', 'bar!']) == ['foo', 'bar!', 'bar']
+    Expect dasht#resolve_pattern(['foo!', 'bar!']) == ['foo!', 'foo', 'bar!', 'bar']
   end
 
   it 'removes duplicate patterns from the final list of patterns it returns'
     Expect dasht#resolve_pattern(['foo', 'foo']) == ['foo']
-    Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!', 'foo ']
+    Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!', 'foo']
   end
 end
 
