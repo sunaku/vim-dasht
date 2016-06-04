@@ -85,7 +85,8 @@ describe 'dasht#resolve_pattern'
 
   it 'removes duplicate patterns from the final list of patterns it returns'
     Expect dasht#resolve_pattern(['foo', 'foo']) == ['foo']
-    Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!', 'foo']
+    Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!']
+    Expect dasht#resolve_pattern(['foo', 'foo!', 'foo']) == ['foo', 'foo!']
   end
 end
 
@@ -114,5 +115,27 @@ describe 'dasht#resolve_docsets'
 
     let g:dasht_filetype_docsets = {'foo': ['bar', 'qux']}
     Expect dasht#resolve_docsets('foo') == ['foo', 'bar', 'qux']
+  end
+end
+
+describe 'dasht#unique'
+  it 'does nothing when there are no duplicates'
+    Expect dasht#unique([]) == []
+    Expect dasht#unique(['foo']) == ['foo']
+    Expect dasht#unique(['foo', 'bar']) == ['foo', 'bar']
+  end
+
+  it 'retains first copy of adjacent duplicates'
+    Expect dasht#unique(['foo', 'foo']) == ['foo']
+    Expect dasht#unique(['foo', 'foo', 'bar']) == ['foo', 'bar']
+    Expect dasht#unique(['foo', 'bar', 'bar']) == ['foo', 'bar']
+    Expect dasht#unique(['qux', 'foo', 'foo', 'bar']) == ['qux', 'foo', 'bar']
+  end
+
+  it 'retains first copy of nonadjacent duplicates'
+    Expect dasht#unique(['foo', 'bar', 'foo']) == ['foo', 'bar']
+    Expect dasht#unique(['foo', 'bar', 'bar', 'foo']) == ['foo', 'bar']
+    Expect dasht#unique(['foo', 'foo', 'bar', 'foo']) == ['foo', 'bar']
+    Expect dasht#unique(['foo', 'foo', 'bar', 'bar', 'foo']) == ['foo', 'bar']
   end
 end

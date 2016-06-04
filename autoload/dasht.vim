@@ -55,12 +55,18 @@ function! dasht#resolve_pattern(pattern) abort
   if type(a:pattern) == type([])
     let result = []
     call map(a:pattern, 'extend(result, dasht#resolve_pattern(v:val))')
-    return uniq(result)
+    return dasht#unique(result)
   else
     let patterns = map([a:pattern, substitute(a:pattern, '\W\+', ' ', 'g')],
           \ 'substitute(v:val, "^\\s\\+\\|\\s\\+$", "", "g")')
-    return uniq(filter(patterns, 'match(v:val, "\\S") != -1'))
+    return dasht#unique(filter(patterns, 'match(v:val, "\\S") != -1'))
   endif
+endfunction
+
+" Removes duplicate items, even if they are not adjacent, from the given list.
+function! dasht#unique(list) abort
+  let new = {}
+  return filter(a:list, 'get(new, v:val, 1) && len(extend(new, {v:val : 0}))')
 endfunction
 
 " Resolves the given docsets (which may be a list or the name of a filetype,
