@@ -88,6 +88,16 @@ describe 'dasht#resolve_pattern'
     Expect dasht#resolve_pattern(['foo', 'foo!']) == ['foo', 'foo!']
     Expect dasht#resolve_pattern(['foo', 'foo!', 'foo']) == ['foo', 'foo!']
   end
+
+  it 'resolves function calls() into separate patterns to be more forgiving'
+    Expect dasht#resolve_pattern('a()') == ['a()', 'a']
+    Expect dasht#resolve_pattern('a()b()') == ['a()b()', 'a b', 'a', 'b']
+    Expect dasht#resolve_pattern('a(b())') == ['a(b())', 'a b', 'a', 'b']
+    Expect dasht#resolve_pattern('a(b(c))') == ['a(b(c))', 'a b c', 'a', 'b', 'c']
+    Expect dasht#resolve_pattern('a(b())c()') == ['a(b())c()', 'a b c', 'a', 'b', 'c']
+    Expect dasht#resolve_pattern('a(b(c,d))') == ['a(b(c,d))', 'a b c d', 'a', 'b', 'c', 'd']
+    Expect dasht#resolve_pattern('a( b( c, d ) )') == ['a( b( c, d ) )', 'a b c d', 'a', 'b', 'c', 'd']
+  end
 end
 
 describe 'dasht#resolve_docsets'
