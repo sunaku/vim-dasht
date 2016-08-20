@@ -1,3 +1,10 @@
+" Searches for the given pattern (which may be a list) in the given docsets
+" (which may be a list or a filetype resolved by `g:dasht_filetype_docsets`).
+function! dasht#search(pattern, docsets) abort
+  let title = type(a:pattern) == type([]) ? a:pattern[0] : a:pattern
+  call dasht#execute(dasht#command(a:pattern, a:docsets), title)
+endfunction
+
 " Runs the given shell command.  If it exits with a nonzero status, waits for
 " the user to press any key before clearing the given shell command's output.
 " Under NeoVim, the terminal's title is overriden to reflect the given value.
@@ -36,17 +43,6 @@ function! dasht#command(pattern, docsets) abort
   return dasht#resolve_command(patterns, dasht#resolve_docsets(a:docsets))
 endfunction
 
-" Builds a shell command that searches for the given pattern (which may be a
-" list) in the given docsets (which may be a list or the name of a filetype).
-function! dasht#resolve_command(pattern, docsets) abort
-  if type(a:pattern) == type([])
-    return join(map(a:pattern, 'dasht#resolve_command(v:val, a:docsets)'), ' || ')
-  else
-    let arguments = map([a:pattern] + a:docsets, 'shellescape(v:val, 1)')
-    return join(['dasht'] + arguments, ' ')
-  endif
-endfunction
-
 " Resolves the given pattern (which may be a list) into a list of patterns:
 " the first one is the original and the second one is a forgiving fallback,
 " where all non-word characters are replaced by spaces (wildcards in dasht).
@@ -71,6 +67,17 @@ function! dasht#unique(list) abort
   return filter(a:list, 'get(new, v:val, 1) && len(extend(new, {v:val : 0}))')
 endfunction
 
+" Builds a shell command that searches for the given pattern (which may be a
+" list) in the given docsets (which may be a list or the name of a filetype).
+function! dasht#resolve_command(pattern, docsets) abort
+  if type(a:pattern) == type([])
+    return join(map(a:pattern, 'dasht#resolve_command(v:val, a:docsets)'), ' || ')
+  else
+    let arguments = map([a:pattern] + a:docsets, 'shellescape(v:val, 1)')
+    return join(['dasht'] + arguments, ' ')
+  endif
+endfunction
+
 " Resolves the given docsets (which may be a list or the name of a filetype,
 " which is resolved through lookup in `g:dasht_filetype_docsets` dictionary:
 " the first one is original and the rest are from the dictionary definition).
@@ -81,11 +88,4 @@ function! dasht#resolve_docsets(docsets) abort
     let key = a:docsets
     return [key] + get(get(g:, 'dasht_filetype_docsets', {}), key, [])
   endif
-endfunction
-
-" Searches for the given pattern (which may be a list) in the given docsets
-" (which may be a list or a filetype resolved by `g:dasht_filetype_docsets`).
-function! dasht#search(pattern, docsets) abort
-  let title = type(a:pattern) == type([]) ? a:pattern[0] : a:pattern
-  call dasht#execute(dasht#command(a:pattern, a:docsets), title)
 endfunction
