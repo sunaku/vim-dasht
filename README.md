@@ -3,43 +3,57 @@
 (Neo)Vim plugin for [dasht] integration:
 [dasht]: https://github.com/sunaku/dasht
 
-```vim
-" Search API docs for query you type in:
-nnoremap <Leader>k :Dasht<Space>
+* Search docsets for something you type:
 
-" Search API docs for word under cursor:
-nnoremap <silent> <Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')])<Return>
+    ```vim
+    " search related docsets
+    nnoremap <Leader>k :Dasht<Space>
 
-" Search API docs for the selected text:
-vnoremap <silent> <Leader>K y:<C-U>call Dasht(getreg(0))<Return>
-```
+    " search ALL the docsets
+    nnoremap <Leader><Leader>k :Dasht!<Space>
+    ```
 
-You can control which APIs are searched:
+* Search docsets for words under cursor:
 
-```vim
-" Specify additional API docs to search:
-" (maps filetype name to docset regexps)
-let g:dasht_filetype_docsets = {
-      \ 'elixir': ['erlang'],
-      \ 'cpp': ['boost', '^c$', 'OpenGL', 'OpenCV_C'],
-      \ 'html': ['css', 'js', 'bootstrap', 'jquery'],
-      \ 'javascript': ['jasmine', 'nodejs', 'grunt', 'gulp', 'jade', 'react'],
-      \ 'python': ['(num|sci)py', 'pandas', 'sqlalchemy', 'twisted', 'jinja'],
-      \ }
-```
+    ```vim
+    " search related docsets
+    nnoremap <silent> <Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')])<Return>
 
-Or search all APIs with an override `!`:
+    " search ALL the docsets
+    nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')], '!')<Return>
+    ```
 
-```vim
-" Search API docs for query you type in:
-nnoremap <Leader><Leader>k :Dasht!<Space>
+* Search docsets for your selected text:
 
-" Search API docs for word under cursor:
-nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')], '!')<Return>
+    ```vim
+    " search related docsets
+    vnoremap <silent> <Leader>K y:<C-U>call Dasht(getreg(0))<Return>
 
-" Search API docs for the selected text:
-vnoremap <silent> <Leader><Leader>K y:<C-U>call Dasht(getreg(0), '!')<Return>
-```
+    " search ALL the docsets
+    vnoremap <silent> <Leader><Leader>K y:<C-U>call Dasht(getreg(0), '!')<Return>
+    ```
+
+* Specify related docsets for searching:
+
+    ```vim
+    let g:dasht_filetype_docsets = {} " filetype => list of docset name regexp
+
+    " For example: {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
+
+      " When in Elixir, also search Erlang:
+      let g:dasht_filetype_docsets['elixir'] = ['erlang']
+
+      " When in C++, also search C, Boost, and OpenGL:
+      let g:dasht_filetype_docsets['cpp'] = ['^c$', 'boost', 'OpenGL']
+
+      " When in Python, also search NumPy, SciPy, and Pandas:
+      let g:dasht_filetype_docsets['python'] = ['(num|sci)py', 'pandas']
+
+      " When in HTML, also search CSS, JavaScript, Bootstrap, and jQuery:
+      let g:dasht_filetype_docsets['html'] = ['css', 'js', 'bootstrap']
+
+    " and so on... }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+    ```
 
 Developers can run the [vim-spec] tests:
 [vim-spec]: https://github.com/kana/vim-vspec
