@@ -1,7 +1,6 @@
 # dasht.vim
 
-(Neo)Vim plugin for [dasht] integration:
-[dasht]: https://github.com/sunaku/dasht
+A (Neo)Vim plugin for [dasht]( https://github.com/sunaku/dasht ) integration:
 
 * Search docsets for something you type:
 
@@ -55,8 +54,9 @@
     " and so on... }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
     ```
 
-Developers can run the [vim-spec] tests:
-[vim-spec]: https://github.com/kana/vim-vspec
+## Testing
+
+Developers can run the [vim-spec]( https://github.com/kana/vim-vspec ) tests:
 
 ```sh
 gem install bundler         # first time
@@ -64,11 +64,12 @@ bundle install              # first time
 bundle exec vim-flavor test # every time
 ```
 
-Distributed under the same terms as Vim.
->
->  Copyright 2016 Suraj N. Kurapati
->     <https://github.com/sunaku>
->
-> Like my work? :+1: Please [spare a life] today as thanks!
-> :cow::pig::chicken::fish::speak_no_evil::v::revolving_hearts:
-[spare a life]: https://sunaku.github.io/vegan-for-life.html
+## License
+
+[Spare A Life]: https://sunaku.github.io/vegan-for-life.html
+> Like my work? :+1:  Please [spare a life] today as thanks!
+:cow::pig::chicken::fish::speak_no_evil::v::revolving_hearts:
+
+Copyright 2016 Suraj N. Kurapati <https://github.com/sunaku>
+
+Distributed under the same terms as Vim itself.
