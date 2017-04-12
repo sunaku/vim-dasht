@@ -25,12 +25,23 @@ function! dasht#execute(command, title) abort
     " stty and dd below emulate getch(3)
     " as answered by Diego Torres Milano
     " http://stackoverflow.com/a/8732057
-    silent execute '! clear;' a:command
-          \ '|| {'
-          \ 'stty raw -echo  ;'
-          \ 'dd bs=1 count=1 ;'
-          \ 'stty -raw echo  ;'
-          \ '} >/dev/null 2>&1'
+    let command = 'clear ; '. a:command
+          \ .' || {'
+          \ .' stty raw -echo  ;'
+          \ .' dd bs=1 count=1 ;'
+          \ .' stty -raw echo  ;'
+          \ .' } >/dev/null 2>&1'
+
+    " gvim has no terminal emulation, so
+    " launch an actual terminal emulator
+    if has('gui')
+      let command = 'xterm'
+            \ .' -T '. shellescape(a:title)
+            \ .' -e '. shellescape(command)
+            \ .' &'
+    endif
+
+    silent execute '!' command
     redraw!
   endif
 endfunction
