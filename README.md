@@ -16,10 +16,10 @@ A (Neo)Vim plugin for [dasht]( https://github.com/sunaku/dasht ) integration:
 
     ```vim
     " search related docsets
-    nnoremap <silent> <Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')])<Return>
+    nnoremap <silent> <Leader>K :call Dasht([expand('<cword>'), expand('<cWORD>')])<Return>
 
     " search ALL the docsets
-    nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cWORD>'), expand('<cword>')], '!')<Return>
+    nnoremap <silent> <Leader><Leader>K :call Dasht([expand('<cword>'), expand('<cWORD>')], '!')<Return>
     ```
 
 * Search docsets for your selected text:
