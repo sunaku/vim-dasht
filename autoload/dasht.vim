@@ -34,7 +34,7 @@ function! dasht#execute(command, title) abort
 
     " gvim has no terminal emulation, so
     " launch an actual terminal emulator
-    if has('gui')
+    if has('gui') && has('gui_running')
       let command = 'xterm'
             \ .' -T '. shellescape(a:title)
             \ .' -e '. shellescape(command)
