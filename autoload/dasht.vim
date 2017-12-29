@@ -94,7 +94,14 @@ endfunction
 " the first one is original and the rest are from the dictionary definition).
 function! dasht#resolve_docsets(docsets) abort
   if type(a:docsets) == type([])
-    return a:docsets
+    let exp_docsets = a:docsets
+    for key in exp_docsets
+        let filter_docsets_named = get(get(g:, 'dasht_filetype_exclude_docsets', {}), key, [])
+        let exp_docsets += get(get(g:, 'dasht_filetype_docsets', {}), key, [])
+        call filter(exp_docsets, 'index(filter_docsets_named, v:val) == -1')
+    endfor
+
+    return exp_docsets
   else
     let key = a:docsets
     return [key] + get(get(g:, 'dasht_filetype_docsets', {}), key, [])
