@@ -93,10 +93,12 @@ endfunction
 " which is resolved through lookup in `g:dasht_filetype_docsets` dictionary:
 " the first one is original and the rest are from the dictionary definition).
 function! dasht#resolve_docsets(docsets) abort
-  if type(a:docsets) == type([])
-    return a:docsets
-  else
-    let key = a:docsets
-    return [key] + get(get(g:, 'dasht_filetype_docsets', {}), key, [])
-  endif
+  let resolved = []
+  let unresolved = type(a:docsets) == v:t_list ? a:docsets : [a:docsets]
+  call map(unresolved, 'extend(resolved, s:resolve_single_docset(v:val))')
+  return resolved
+endfunction
+
+function! s:resolve_single_docset(key) abort
+  return [a:key] + get(get(g:, 'dasht_filetype_docsets', {}), a:key, [])
 endfunction

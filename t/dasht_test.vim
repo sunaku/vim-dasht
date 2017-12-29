@@ -101,13 +101,6 @@ describe 'dasht#resolve_pattern'
 end
 
 describe 'dasht#resolve_docsets'
-  it 'returns argument if list'
-    Expect dasht#resolve_docsets([]) == []
-    Expect dasht#resolve_docsets(['foo']) == ['foo']
-    Expect dasht#resolve_docsets(['foo', 'bar']) == ['foo', 'bar']
-    Expect dasht#resolve_docsets('foo') != 'foo'
-  end
-
   it 'resolves filetype to itself when not found in dictionary'
     let g:dasht_filetype_docsets = {}
     Expect dasht#resolve_docsets('foo') == ['foo']
@@ -125,6 +118,17 @@ describe 'dasht#resolve_docsets'
 
     let g:dasht_filetype_docsets = {'foo': ['bar', 'qux']}
     Expect dasht#resolve_docsets('foo') == ['foo', 'bar', 'qux']
+  end
+
+  it 'resolves filetype for multiple docsets if list is given'
+    Expect dasht#resolve_docsets([]) == []
+
+    unlet g:dasht_filetype_docsets
+    Expect dasht#resolve_docsets(['foo']) == ['foo']
+    Expect dasht#resolve_docsets(['foo', 'bar']) == ['foo', 'bar']
+
+    let g:dasht_filetype_docsets = {'foo': ['hoge'], 'bar': ['piyo']}
+    Expect dasht#resolve_docsets(['foo', 'bar']) == ['foo', 'hoge', 'bar', 'piyo']
   end
 end
 
