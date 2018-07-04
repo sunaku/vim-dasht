@@ -54,6 +54,28 @@ A (Neo)Vim plugin for [dasht]( https://github.com/sunaku/dasht ) integration:
     " and so on... }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
     ```
 
+* Configure where results are displayed:
+
+    ```vim
+    " create window below current one (default)
+    let g:dasht_results_window = 'new'
+
+    " create window beside current one
+    let g:dasht_results_window = 'vnew'
+
+    " use current window to show results
+    let g:dasht_results_window = 'enew'
+
+    " create panel at left-most edge
+    let g:dasht_results_window = 'topleft vnew'
+
+    " create panel at right-most edge
+    let g:dasht_results_window = 'botright vnew'
+
+    " create new tab beside current one
+    let g:dasht_results_window = 'tabnew'
+    ```
+
 ## Testing
 
 Developers can run the [vim-spec]( https://github.com/kana/vim-vspec ) tests:

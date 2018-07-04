@@ -16,7 +16,7 @@ function! dasht#execute(command, title) abort
         bdelete!
       endif
     endfunction
-    -tabnew
+    execute get(g:, 'dasht_results_window', 'new')
     call termopen(a:command, termopen)
     " change tab title; see `:help :file_f`
     execute 'file' shellescape(a:title, 1)
