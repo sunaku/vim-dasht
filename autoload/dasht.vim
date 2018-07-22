@@ -9,17 +9,18 @@ endfunction
 " the user to press any key before clearing the given shell command's output.
 " Under NeoVim, the terminal's title is overriden to reflect the given value.
 function! dasht#execute(command, title) abort
-  if has('nvim')
-    let termopen = {}
-    function termopen.on_exit(id, code, event)
-      if a:code == 0 " successful exit status
-        bdelete!
-      endif
-    endfunction
-    execute get(g:, 'dasht_results_window', 'new')
-    call termopen(a:command, termopen)
+  if has('terminal')
+    call s:open_dasht_window()
+    call term_start(['sh', '-c', a:command], {
+          \ 'curwin': 1,
+          \ 'term_name': a:title,
+          \ 'exit_cb': function('s:handle_dasht_exit')
+          \ })
+  elseif has('nvim')
+    call s:open_dasht_window()
+    call termopen(a:command, {'on_exit': function('s:handle_dasht_exit')})
     " change tab title; see `:help :file_f`
-    execute 'file' shellescape(a:title, 1)
+    silent! execute 'file' shellescape(a:title, 1)
     startinsert
   else
     " stty and dd below emulate getch(3)
@@ -43,6 +44,22 @@ function! dasht#execute(command, title) abort
 
     silent execute '!' command
     redraw!
+  endif
+endfunction
+
+function! s:open_dasht_window() abort
+  execute get(g:, 'dasht_results_window', 'new')
+endfunction
+
+function! s:handle_dasht_exit(job_id, exit_status, ...) abort
+  if a:exit_status == 0
+    bdelete!
+  elseif has('nvim')
+    " Vim's :terminal exits insert mode when job is terminated,
+    " whereas NeoVim's :terminal still remains in insert mode
+    " and waits for any keypress before auto-closing itself.
+    " This overrides NeoVim's :terminal to behave like Vim.
+    call feedkeys("\<C-\>\<C-N>", 'n')
   endif
 endfunction
 
