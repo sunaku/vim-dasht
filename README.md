@@ -78,7 +78,7 @@ A (Neo)Vim plugin for [dasht]( https://github.com/sunaku/dasht ) integration:
 
 ## Testing
 
-Developers can run the [vim-spec]( https://github.com/kana/vim-vspec ) tests:
+Developers can run the [vim-vspec]( https://github.com/kana/vim-vspec ) tests:
 
 ```sh
 gem install bundler         # first time
