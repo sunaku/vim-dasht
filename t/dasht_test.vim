@@ -153,3 +153,85 @@ describe 'dasht#unique'
     Expect dasht#unique(['foo', 'foo', 'bar', 'bar', 'foo']) == ['foo', 'bar']
   end
 end
+
+describe 'dasht#find_search_terms'
+  it 'empty line'
+    Expect dasht#find_search_terms('', 1) == []
+  end
+
+  it 'blank line'
+    Expect dasht#find_search_terms(' ', 1) == []
+  end
+
+  it 'single word'
+    Expect dasht#find_search_terms('foo', 1) == ['foo']
+  end
+
+  it 'single word with surrounding whitespace'
+    Expect dasht#find_search_terms('foo ', 1) == ['foo']
+    Expect dasht#find_search_terms(' foo', 2) == ['foo']
+    Expect dasht#find_search_terms(' foo ', 2) == ['foo']
+  end
+
+  it 'single word of multiple subwords: cursor on first subword'
+    Expect dasht#find_search_terms('foo.bar', 1) == ['foo.bar', 'foo']
+  end
+
+  it 'single word of multiple subwords: cursor at end of first subword'
+    Expect dasht#find_search_terms('foo.bar', 4) == ['foo.bar', 'foo']
+  end
+
+  it 'single word of multiple subwords: cursor on second subword'
+    Expect dasht#find_search_terms('foo.bar', 5) == ['foo.bar', 'bar']
+  end
+
+  it 'single word of multiple subwords: cursor on second subword'
+    Expect dasht#find_search_terms('foo.bar.baz', 9) == ['foo.bar.baz', 'baz']
+  end
+
+  it 'multiple words: cursor on first word'
+    Expect dasht#find_search_terms('foo bar', 1) == ['foo']
+    Expect dasht#find_search_terms('foo(bar', 1) == ['foo']
+  end
+
+  it 'multiple words: cursor at end of first word'
+    Expect dasht#find_search_terms('foo bar', 4) == ['foo']
+    Expect dasht#find_search_terms('foo(bar', 4) == ['foo']
+  end
+
+  it 'multiple words: cursor on second word'
+    Expect dasht#find_search_terms('foo bar', 5) == ['bar', 'foo']
+    Expect dasht#find_search_terms('foo(bar', 5) == ['bar', 'foo']
+  end
+end
+
+describe 'dasht#cursor_search_terms'
+  before
+    call setline('.', 'Outer.outerFun(Inner.innerFun(innerArg), outerArg)')
+  end
+
+  it 'outer function call'
+    normal ^t(
+    Expect dasht#cursor_search_terms() == ['Outer.outerFun', 'outerFun']
+  end
+
+  it 'opening parenthesis is considered part of function call'
+    normal ^f(
+    Expect dasht#cursor_search_terms() == ['Outer.outerFun', 'outerFun']
+  end
+
+  it 'inner function call includes outer function call'
+    normal ^2t(
+    Expect dasht#cursor_search_terms() == ['Inner.innerFun', 'innerFun', 'Outer.outerFun']
+  end
+
+  it 'inner function call argument includes function calls'
+    call search('innerArg')
+    Expect dasht#cursor_search_terms() == ['innerArg', 'Inner.innerFun', 'Outer.outerFun']
+  end
+
+  it 'outer function call argument excludes function calls (stops at comma)'
+    call search('outerArg')
+    Expect dasht#cursor_search_terms() == ['outerArg']
+  end
+end

@@ -119,3 +119,66 @@ endfunction
 function! s:resolve_single_docset(key) abort
   return [a:key] + get(get(g:, 'dasht_filetype_docsets', {}), a:key, [])
 endfunction
+
+let s:function_call_delimiters = '[()[:space:]]\+'
+let s:word_boundary_delimiters = '\W\+'
+
+" Finds search terms in the given haystack of text at the given column number.
+function! dasht#find_search_terms(haystack, cursor_column) abort
+  if a:haystack !~ '\S'
+    return []
+  endif
+
+  let terms = split(a:haystack, s:function_call_delimiters .'\zs')
+  let [terms_cursor_index, terms_cursor_column] = s:find_cursor_term(terms, a:cursor_column)
+  if terms_cursor_index < 0
+    return []
+  endif
+
+  let results = reverse(terms[0:terms_cursor_index])
+  let results = map(results, 'substitute(v:val, s:function_call_delimiters, "", "g")')
+  let results = filter(results, '!empty(v:val)')
+
+  " don't go back further than a comma nearest to word under cursor
+  let results_comma_index = index(results, ",")
+  if results_comma_index > 0
+    let results = results[0:results_comma_index-1]
+  endif
+
+  " use subword under cursor as the secondary fallback search term
+  let cursor_term = terms[terms_cursor_index]
+  let cursor_words = split(cursor_term, s:word_boundary_delimiters .'\zs')
+  let cursor_term_column = a:cursor_column - terms_cursor_column
+  let [cursor_words_index, _] = s:find_cursor_term(cursor_words, cursor_term_column)
+  if cursor_words_index >= 0
+    let cursor_term_word = cursor_words[cursor_words_index]
+    let cursor_term_word = substitute(cursor_term_word, s:word_boundary_delimiters, '', 'g')
+    if cursor_term_word != results[0]
+      call insert(results, cursor_term_word, 1)
+    endif
+  endif
+
+  return results
+endfunction
+
+function! s:find_cursor_term(terms, cursor_column) abort
+  let index = 0
+  let column = 0
+  for term in a:terms
+    let width = len(term)
+    if column < a:cursor_column && column + width >= a:cursor_column
+      return [index, column]
+    endif
+    let index += 1
+    let column += width
+  endfor
+  return [-1, -1]
+endfunction
+
+" Finds search terms at the cursor position.  This is a more intelligent form
+" of the expression "[expand('<cWORD>'), expand('<cword>')]" because it breaks
+" complex <cWORD>s containing multiple function calls (e.g. "foo(bar(baz))")
+" into pieces and focuses your search on the piece directly under the cursor.
+function! dasht#cursor_search_terms() abort
+  return dasht#find_search_terms(getline('.'), col('.'))
+endfunction
