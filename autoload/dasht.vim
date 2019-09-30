@@ -135,16 +135,6 @@ function! dasht#find_search_terms(haystack, cursor_column) abort
     return []
   endif
 
-  let results = reverse(terms[0:terms_cursor_index])
-  let results = map(results, 'substitute(v:val, s:function_call_delimiters, "", "g")')
-  let results = filter(results, '!empty(v:val)')
-
-  " don't go back further than a comma nearest to word under cursor
-  let results_comma_index = index(results, ",")
-  if results_comma_index > 0
-    let results = results[0:results_comma_index-1]
-  endif
-
   " use subword under cursor as the secondary fallback search term
   let cursor_term = terms[terms_cursor_index]
   let cursor_words = split(cursor_term, s:word_boundary_delimiters .'\zs')
@@ -153,9 +143,19 @@ function! dasht#find_search_terms(haystack, cursor_column) abort
   if cursor_words_index >= 0
     let cursor_term_word = cursor_words[cursor_words_index]
     let cursor_term_word = substitute(cursor_term_word, s:word_boundary_delimiters, '', 'g')
-    if cursor_term_word != results[0]
-      call insert(results, cursor_term_word, 1)
-    endif
+  endif
+
+  " assemble results, adding cursor subword as secondary fallback
+  let results = reverse(terms[0:terms_cursor_index])
+  let results = map(results, 'substitute(v:val, ",", "", "g")')
+  let results = insert(results, cursor_term_word, 1)
+  let results = map(results, 'substitute(v:val, s:function_call_delimiters, "", "g")')
+  let results = uniq(results) " cursor_term_word may be duplicate
+
+  " don't go back further than comma nearest to word under cursor
+  let results_comma_index = index(results, "")
+  if results_comma_index > 0
+    let results = results[0:results_comma_index-1]
   endif
 
   return results

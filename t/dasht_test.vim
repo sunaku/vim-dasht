@@ -207,7 +207,7 @@ end
 
 describe 'dasht#cursor_search_terms'
   before
-    call setline('.', 'Outer.outerFun(Inner.innerFun(innerArg), outerArg)')
+    call setline('.', 'Outer.outerFun(Inner.innerFun(innerArg, innerArg2), outerArg)')
   end
 
   it 'outer function call'
