@@ -40,16 +40,19 @@ A (Neo)Vim plugin for [dasht]( https://github.com/sunaku/dasht ) integration:
     " For example: {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
       " When in Elixir, also search Erlang:
-      let g:dasht_filetype_docsets['elixir'] = ['erlang']
+      let g:dasht_filetype_docsets['elixir'] = ['elixir', 'erlang']
 
       " When in C++, also search C, Boost, and OpenGL:
-      let g:dasht_filetype_docsets['cpp'] = ['^c$', 'boost', 'OpenGL']
+      let g:dasht_filetype_docsets['cpp'] = ['cpp', '^c$', 'boost', 'OpenGL']
 
       " When in Python, also search NumPy, SciPy, and Pandas:
-      let g:dasht_filetype_docsets['python'] = ['(num|sci)py', 'pandas']
+      let g:dasht_filetype_docsets['python'] = ['python', '(num|sci)py', 'pandas']
 
       " When in HTML, also search CSS, JavaScript, Bootstrap, and jQuery:
-      let g:dasht_filetype_docsets['html'] = ['css', 'js', 'bootstrap']
+      let g:dasht_filetype_docsets['html'] = ['html', 'css', 'js', 'bootstrap']
+
+      " When in Java, search Java SE11, but not JavaScript:
+      let g:dasht_filetype_docsets['java'] = ['java_se11']
 
     " and so on... }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
     ```

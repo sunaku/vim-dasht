@@ -109,15 +109,15 @@ describe 'dasht#resolve_docsets'
     Expect dasht#resolve_docsets('foo') == ['foo']
   end
 
-  it 'resolves filetype to itself and definition in dictionary'
+  it 'resolves filetype to definition in dictionary'
     let g:dasht_filetype_docsets = {'foo': []}
-    Expect dasht#resolve_docsets('foo') == ['foo']
+    Expect dasht#resolve_docsets('foo') == []
 
     let g:dasht_filetype_docsets = {'foo': ['bar']}
-    Expect dasht#resolve_docsets('foo') == ['foo', 'bar']
+    Expect dasht#resolve_docsets('foo') == ['bar']
 
     let g:dasht_filetype_docsets = {'foo': ['bar', 'qux']}
-    Expect dasht#resolve_docsets('foo') == ['foo', 'bar', 'qux']
+    Expect dasht#resolve_docsets('foo') == ['bar', 'qux']
   end
 
   it 'resolves filetype for multiple docsets if list is given'
@@ -128,7 +128,7 @@ describe 'dasht#resolve_docsets'
     Expect dasht#resolve_docsets(['foo', 'bar']) == ['foo', 'bar']
 
     let g:dasht_filetype_docsets = {'foo': ['hoge'], 'bar': ['piyo']}
-    Expect dasht#resolve_docsets(['foo', 'bar']) == ['foo', 'hoge', 'bar', 'piyo']
+    Expect dasht#resolve_docsets(['foo', 'bar']) == ['hoge', 'piyo']
   end
 end
 
