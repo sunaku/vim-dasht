@@ -117,7 +117,7 @@ function! dasht#resolve_docsets(docsets) abort
 endfunction
 
 function! s:resolve_single_docset(key) abort
-  return [a:key] + get(get(g:, 'dasht_filetype_docsets', {}), a:key, [])
+  return [] + get(get(g:, 'dasht_filetype_docsets', {}), a:key, [a:key])
 endfunction
 
 let s:function_call_delimiters = '[()[:space:]]\+'
