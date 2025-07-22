@@ -4,7 +4,7 @@ GEM
     parslet (2.0.0)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    thor (1.2.1)
+    thor (1.4.0)
     tty-color (0.6.0)
     vim-flavor (4.0.2)
       parslet (>= 1.8, < 3.0)
